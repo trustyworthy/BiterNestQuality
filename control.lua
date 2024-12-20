@@ -1,59 +1,308 @@
 --control.lua
-function roll_weighted_die(bias)
-    local weights = {9000, 900, 90, 9, 1}
-    local reversed_weights = {1, 9, 90, 900, 9000}
-    local bias = game.forces["enemy"].get_evolution_factor("nauvis")
-    for i = 1, #weights do
-        weights[i] = weights[i] * (1 - bias) + reversed_weights[i] * bias
+local quality_names
+script.on_load(function()
+		if script.active_mods["infinite-quality-tiers"] then
+			quality_names = {"normal",
+			"uncommon",
+			"rare",
+			"epic",
+			"legendary",
+			"mythic",
+			"fabled",
+			"divine",
+			"exalted",
+			"supreme",
+			"marvelous",
+			"fantastical",
+			"timeless",
+			"immortalized",
+			"miraclous",
+			"cosmic",
+			"illustrious",
+			"unreal",
+			"godly",
+			"revered",
+			"glorious",
+			"majestic",
+			"prodigious",
+			"bewitching",
+			"mystical",
+			"deific",
+			"ancient",
+			"exceptional",
+			"incredible",
+			"impossible",
+			"supernatural",
+			"exuberant",
+			"extravagant",
+			"glamorous",
+			"obscene",
+			"obscure",
+			"obnoxious",
+			"cringe",
+			"based",
+			"spooky",
+			"rich",
+			"poor",
+			"stinky",
+			"smelly",
+			"silly",
+			"funny",
+			"ugly",
+			"lazy",
+			"crazy",
+			"hazy",
+			"horny",
+			"sweaty",
+			"salty",
+			"sour",
+			"sweet",
+			"bitter",
+			"umami",
+			"illusory",
+			"wonderous",
+			"venerated",
+			"four-out-of-five-dentists-surveyed-recommend-sugarless-gum-for-their-patients-who-chew-gum",
+			"pantheonic",
+			"spellbinding",
+			"unthinkable",
+			"unimaginable",
+			"unfathomable",
+			"unbelievable",
+			"unrealizable",
+			"underwater",
+			"unbreakable",
+			"unreachable",
+			"unattainable",
+			"unobtainable",
+			"unusable",
+			"unnamed",
+			"unknowable",
+			"unpronounceable",
+			"red",
+			"blue",
+			"green",
+			"yellow",
+			"charmander",
+			"squirtle",
+			"bulbasaur",
+			"pikachu",
+			"eevee",
+			"jigglypuff",
+			"insert-quality-name-here",
+			"i-live",
+			"i-die",
+			"i-live-again",
+			"witness-me",
+			"100",
+			"101",
+			"110",
+			"111",
+			"kovarex",
+			"slpwnd",
+			"glex",
+			"twinsen",
+			"posila",
+			"rseding91",
+			"v453000",
+			"klonan",
+			"jitka",
+			"bilka",
+			"sanqui",
+			"zopa",
+			"boskid",
+			"ian",
+			"lou",
+			"earendel",
+			"jerzy",
+			"lucas",
+			"galileus",
+			"fearghall",
+			"therenas",
+			"vinzenz",
+			"tobias1595",
+			"genhis",
+			"strange-pan",
+			"don",
+			"pard",
+			"shane",
+			"hursa",
+			"katya",
+			"raiguard",
+			"augustus",
+			"tiberius",
+			"caligula",
+			"claudius",
+			"nero",
+			"galba",
+			"otho",
+			"vitellius",
+			"vespasian",
+			"titus",
+			"domitian",
+			"nerva",
+			"trajan",
+			"hadrian",
+			"antoninus",
+			"marcus-aurelius",
+			"lucius-verus",
+			"commodus",
+			"publius-helvius-pertinax",
+			"marcus-didius-severus-julianus",
+			"sepimius-severus",
+			"leonardo",
+			"raphael",
+			"michelangelo",
+			"donatello",
+			"legendary-legend",
+			"mythical-legendary-legend",
+			"fabled-mythical-legendary-legend",
+			"divine-fabled-mythical-legendary-legend",
+			"exalted-divine-fabled-mythical-legendary-legend",
+			"supremely-exalted-divine-fabled-mythical-legendary-legend",
+			"bad",
+			"good",
+			"great",
+			"ok",
+			"mediocre",
+			"terrible",
+			"horrible",
+			"awful",
+			"i-bet-noone-ever-crafts-this-quality",
+			"woah-you-actually-crafted-it",
+			"impressive",
+			"but",
+			"you-shouldnt-have-done-that",
+			"ill-be-honest",
+			"you-have-a-gambling-problem",
+			"you-should-stop-gambling",
+			"you-should-really-stop-gambling",
+			"you-should-definitely-stop-gambling",
+			"im-warning-you",
+			"you-are-going-to-lose-everything",
+			"you-are-going-to-lose-everything-and-then-some",
+			"you-are-going-to-lose-everything-and-then-some-and-then-some-more",
+			"really",
+			"please",
+			"pretty-please",
+			"pretty-please-with-a-cherry-on-top",
+			"you-realize-this-quality-tier-only-makes-the-machines-less-than-1-percent-faster-right",
+			"ok-final-warning",
+			"if-you-craft-the-next-quality-i-will-corrupt-your-save-file",
+			"im-serious",
+			"final-final-warning",
+			"your-save-file-is-now-corrupted",
+			"dot",
+			"dot-dot",
+			"dot-dot-dot",
+			"dot-dot-dot-questionmark",
+			"dot-dot-dot-questionmark-exclamationmark",
+			"fine",
+			"i-lied-before",
+			"there-is-no-corruption",
+			"the-cake-is-a-lie",
+			"pigs-cannot-fly",
+			"i-give-up",
+			"you-win",
+			"and-i-lied-again",
+			"there-isnt-even-infinite-qualities",
+			"factorio-limits-the-amount-of-qualities-to-255",
+			"the-game-crashes-if-i-try-to-add-more-qualities",
+			"this-is-number-207",
+			"that-means-theres-only-48-more-qualities-left",
+			"very-soon-youll-have-to-quit",
+			"walk-outside",
+			"get-some-fresh-air",
+			"feel-the-sunshine-on-your-face",
+			"maybe-one-day-far-from-now-youll-come-back",
+			"youll-remember-the-good-times",
+			"youll-remember-the-bad-times",
+			"youll-remember-the-normal-times",
+			"youll-remember-the-uncommon-times",
+			"youll-remember-the-rare-times",
+			"youll-remember-the-epic-times",
+			"youll-remember-the-legendary-times",
+			"youll-remember-the-mythic-times",
+			"can-you-tell-im-stalling",
+			"i-dont-want-it-to-end-either",
+			"but-all-things-end",
+			"you",
+			"me",
+			"all-of-us",
+			"one-day-the-last-ever-person-will-play-factorio",
+			"it-might-be-in-10-100-1000-or-a-million-years",
+			"but-eventually-in-some-future-far-away",
+			"the-last-enginner-will-put-down-the-game",
+			"and-never-pick-it-up-again",
+			"and-then-whats-the-point",
+			"why-did-we-do-all-of-this",
+			"maybe-we-should-instead-just-bury-our-heads-in-the-sand",
+			"but-you-dont-care-about-that",
+			"you-sat-through-21-quality-tiers-named-after-roman-emperors-remember",
+			"or-maybe-you-didnt",
+			"your-probably-just-reading-the-cfg-file-on-github",
+			"cheater",
+			"sorry-that-was-mean-i-take-it-all-back",
+			"how-about-some-normal-quality-names-for-old-times-sake",
+			"spoiler-alert-the-final-quality-is-transcendental",
+			"sorry-i-lied-again-its-actually-redacted",
+			"ok-this-is-really-the-end",
+			"goodbye",
+			"transmission-terminated",
+			"celestial",
+			"prophetic",
+			"astral",
+			"primeval",
+			"otherworldly",
+			"reality-bending",
+		}
+		else
+			quality_names = {"normal",
+				"uncommon",
+				"rare",
+				"epic",
+				"legendary",}
+		end
+	end
+)
+function roll_quality(sides, bias)
+    local weights = {}
+    for i = 1, sides do
+        local position = (i - 1) / (sides - 1)
+        weights[i] = (1 - bias) * (1 - position) + bias * position
     end
-    local total_weight = 0
+    local totalWeight = 0
     for _, weight in ipairs(weights) do
-        total_weight = total_weight + weight
+        totalWeight = totalWeight + weight
     end
-    local rand = math.random(math.floor(total_weight))
-    local cumulative_weight = 0
-    for side, weight in ipairs(weights) do
-        cumulative_weight = cumulative_weight + weight
-        if rand <= cumulative_weight then
-            return side
+    for i = 1, sides do
+        weights[i] = weights[i] / totalWeight
+    end
+    local roll = math.random()
+    local cumulative = 0
+    for i = 1, sides do
+        cumulative = cumulative + weights[i]
+        if roll <= cumulative then
+            return quality_names[i]
         end
-    end
-end
-function roll_quality(bias)
-	local quality = roll_weighted_die(bias)
-
-	if quality == 1 then
-		return "normal"
-    end
-	if quality == 2 then
-		return "uncommon"
-    end
-	if quality == 3 then
-		return "rare"
-    end
-	if quality == 4 then
-		return "epic"
-    end
-	if quality == 5 then
-		return "legendary"
     end
 end
 script.on_event(defines.events.on_biter_base_built,
 	function(event)
-		if event.entity.surface.name == "nauvis" then
-			local nest = event.entity 
-			local nest_pos = nest.position
-			local nest_type = nest.name
-			local nest_quality = roll_quality(game.forces["enemy"].get_evolution_factor("nauvis"))
-			if settings.startup["spawn_location_and_quality_debug"].value == true then
-				game.print("New nest created at: ")
-				game.print(tostring(nest_pos.x))
-				game.print(tostring(nest_pos.y))
-				game.print("Nest Quality: ")
-				game.print(nest_quality)
-			end
-			nest.destroy({raise_destroy = false})
-			game.surfaces["nauvis"].create_entity({name = nest_type, quality = nest_quality, position = nest_pos})
+		local nest = event.entity 
+		local nest_pos = nest.position
+		local nest_type = nest.name
+		local nest_surface = nest.surface.name
+		local nest_quality = roll_quality(#quality_names,game.forces["enemy"].get_evolution_factor(nest_surface))
+		if settings.startup["spawn_location_and_quality_debug"].value == true then
+			game.print(event.entity.surface.name)
+			game.print("New nest created at: ")
+			game.print(tostring(nest_pos.x))
+			game.print(tostring(nest_pos.y))
+			game.print("Nest Quality: ")
+			game.print(nest_quality)
 		end
+		nest.destroy({raise_destroy = false})
+		game.surfaces[nest_surface].create_entity({name = nest_type, quality = nest_quality, position = nest_pos})
 	end
 )
