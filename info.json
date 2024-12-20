@@ -1,9 +1,9 @@
 {
   "name": "BiterNestQuality",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "title": "Biter Nest Quality!",
   "author": "trustworhty",
   "factorio_version": "2.0",
   "dependencies": ["base >= 2.0"],
-  "description": "This mod makes it so that the quality of the nests increase as the evolution factor increases!"
+  "description": "This mod makes it so that the quality of the nests increase as the evolution factor increases! Supports Infinite Quality Tiers and IndustrialCraft - More Qualities."
 }
